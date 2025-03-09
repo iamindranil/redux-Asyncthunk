@@ -1,17 +1,23 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 import Navbar from './components/Navbar'
 import Create from './components/Create'
+import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import Read from './components/Read'
+import Update from './components/Update'
+
+
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <div>
-        <Navbar/>
-        <Create/>
+      <BrowserRouter>
+      <Navbar/>
+      <Routes>
+        <Route path='/' element={<Create/>}/>
+        <Route path='/read' element={<Read/>}/>
+        <Route path='/edit/:id' element={<Update/>}/>
+      </Routes>
+      </BrowserRouter>
     </div>
   )
 }

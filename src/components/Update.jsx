@@ -1,28 +1,44 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { createUser } from '../features/userDetailsSlice';
-import { useNavigate } from 'react-router-dom';
-
-const Create = () => {
-    const[users,setUsers]=useState({})
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom'
+import { editUser } from '../features/userDetailsSlice';
+const Update = () => {
+    const {id}=useParams();
+    const allusers = useSelector((state) => state.userDetails.users);
+    const singleUser = allusers.find((ele) => ele.id === id);
     const dispatch=useDispatch();
     const navigate=useNavigate();
-    const getUserData=(e)=>{
-        setUsers({
-            ...users,
+
+    const[formData,setFormData]=useState({
+        name: "",
+        email: "",
+        age: "",
+        gender: "",
+    })
+
+    useEffect(()=>{
+        setFormData({
+            name:singleUser.name||"",
+            email:singleUser.email||"",
+            age:singleUser.age||"",
+            gender:singleUser.gender||""
+        })
+    },[])
+    const handleOnChange=(e)=>{
+        setFormData({
+            ...formData,
             [e.target.name]:e.target.value
         })
     }
 
-    const handleSubmit=(e)=>{
+    const handleSubmit=async(e)=>{
         e.preventDefault();
-        console.log(users)
-        dispatch(createUser(users))
+        await dispatch(editUser({id,updatedData:formData})).unwrap();
         navigate('/read');
     }
 
-    return (
-        <div>
+  return (
+    <div>
           <form className="w-100 m-5" onSubmit={handleSubmit}>
             <div class="mb-3 ">
               <label class="form-label">Name</label>
@@ -30,8 +46,8 @@ const Create = () => {
                 type="text"
                 name="name"
                 class="form-control"
-                required
-                onChange={getUserData}
+                value={formData.name}
+                onChange={handleOnChange}
               />
             </div>
             <div class="mb-3">
@@ -40,8 +56,9 @@ const Create = () => {
                 type="email"
                 name="email"
                 class="form-control"
-                onChange={getUserData}
-                required
+                value={formData.email}
+                onChange={handleOnChange}
+                
               />
             </div>
             <div class="mb-3">
@@ -50,8 +67,9 @@ const Create = () => {
                 type="text"
                 name="age"
                 class="form-control"
-                onChange={getUserData}
-                required
+                value={formData.age}
+                onChange={handleOnChange}
+                
               />
             </div>
             <div class="mb-3">
@@ -60,8 +78,9 @@ const Create = () => {
                 name="gender"
                 value="Male"
                 type="radio"
-                onChange={getUserData}
-                required
+                checked={formData.gender === "Male"}
+                onChange={handleOnChange}
+                
               />
               <label class="form-check-label">Male</label>
             </div>
@@ -70,18 +89,18 @@ const Create = () => {
                 class="form-check-input"
                 name="gender"
                 value="Female"
-                onChange={getUserData}
+                onChange={handleOnChange}
+                checked={formData.gender === "Female"}
                 type="radio"
               />
               <label class="form-check-label">Female</label>
             </div>
-    
             <button type="submit" class="btn btn-primary">
               Submit
             </button>
           </form>
         </div>
-      );
+  )
 }
 
-export default Create
+export default Update
